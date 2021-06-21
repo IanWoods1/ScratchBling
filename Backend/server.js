@@ -1,11 +1,13 @@
 const express = require("express");
 const app = express();
 const pool = require("./db_connect")
+const cors = require("cors");
+app.use(cors());
 
 app.use(express.json());
 
 //Get all backscratchers
-app.get("/scratchers", async (req, res) => {
+app.get("/api/scratchers", async (req, res) => {
   try {
 
     const allScratchers = await pool.query(
@@ -20,7 +22,7 @@ app.get("/scratchers", async (req, res) => {
 });
 
 //Get one backscratcher
-app.get("/scratchers/:item_name", async (req, res) => {
+app.get("/api/scratchers/:item_name", async (req, res) => {
   try {
 
     const { item_name} = req.params;
@@ -37,8 +39,9 @@ app.get("/scratchers/:item_name", async (req, res) => {
 });
 
 //Create backscratcher
-app.post("/scratchers", async (req, res) => {
+app.post("/api/scratchers", async (req, res) => {
   try {
+    console.log(req);
 
     const {item_name, item_description, item_size, item_cost} = req.body;
     
@@ -55,7 +58,7 @@ app.post("/scratchers", async (req, res) => {
 });
 
 //Update backscratcher
-app.put("/scratchers/:item_name_param", async (req, res) => {
+app.put("/api/scratchers/:item_name_param", async (req, res) => {
   try {
 
     const { item_name_param } = req.params;
@@ -80,7 +83,7 @@ app.put("/scratchers/:item_name_param", async (req, res) => {
 });
 
 //Delete backscratcher
-app.delete("/scratchers/:item_name", async (req, res) => {
+app.delete("/api/scratchers/:item_name", async (req, res) => {
   try {
     const { item_name } = req.params;
 
@@ -89,7 +92,7 @@ app.delete("/scratchers/:item_name", async (req, res) => {
       [item_name]
     );
 
-    res.json(scratcher);
+    res.json(`${item_name} has been deleted.`);
 
   } catch (err) {
     console.log(err.message)
