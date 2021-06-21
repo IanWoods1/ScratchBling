@@ -10,10 +10,9 @@ const CreateScratcher = () => {
   const [sizeXLarge, setSizeXLarge] = useState(false);
   const [cost, setCost] = useState("");
  
-
   const handleSubmit = async () => {
     try {
-      
+
       //Create size arry:
       var sizes = [];
 
