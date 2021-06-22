@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Axios from "axios";
+import AxiosInstance from "../AxiosInstance";
 
 const CreateScratcher = () => {
   const [name, setName] = useState("");
@@ -32,8 +32,8 @@ const CreateScratcher = () => {
         item_cost: cost
       }
 
-      const data = await Axios.post(
-        `http://localhost:3001/api/scratchers`,
+      const data = await AxiosInstance.post(
+        `/scratchers`,
         item,
         {headers: {"x-auth-token": localStorage.getItem("auth-token")}}
       );

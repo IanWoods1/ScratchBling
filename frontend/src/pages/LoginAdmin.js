@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Axios from 'axios';
+import AxiosInstance from "../AxiosInstance";
 import { Link, useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const LoginAdmin = () => {
@@ -13,8 +13,8 @@ const LoginAdmin = () => {
 
     try {
       const loginUser = { username, password };
-      const loginRes = await Axios.post(
-        "http://localhost:3001/api/users/adminlogin", 
+      const loginRes = await AxiosInstance.post(
+        "/users/adminlogin", 
         loginUser
       );
       localStorage.setItem("auth-token", loginRes.data.token);

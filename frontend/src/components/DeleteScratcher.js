@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Axios from 'axios';
+import AxiosInstance from "../AxiosInstance";
 
 const DeleteScratcher = () => {
   const [name, setName] = useState("");
@@ -7,8 +7,8 @@ const DeleteScratcher = () => {
   const handleSubmit = async () => {
     try {
 
-      const data = await Axios.delete(
-        `http://localhost:3001/api/scratchers/${name}`,
+      const data = await AxiosInstance.delete(
+        `/scratchers/${name}`,
         {headers: {"x-auth-token": localStorage.getItem("auth-token")}}
       );
       console.log(data.data);

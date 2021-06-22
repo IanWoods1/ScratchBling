@@ -1,6 +1,6 @@
 //This component is not currently being used. 
 import React,  {useState, useEffect, createContext} from 'react';
-import Axios from 'axios';
+import AxiosInstance from "../AxiosInstance";
 
 const AuthContext = createContext();
 
@@ -18,13 +18,13 @@ function AuthContextProvider(props) {
         localStorage.setItem("auth-token", "");
         token = "";
       }
-      const tokenRes = await Axios.post(
-        "http://localhost:3001/api/users/tokenIsValid", 
+      const tokenRes = await AxiosInstance.post(
+        "/users/tokenIsValid", 
         null, 
         { headers: { "x-auth-token": token } }
       );
       if (tokenRes.data) {
-        const userRes = await Axios.get("http://localhost:3001/api/users/", { headers: {"x-auth-token": token }
+        const userRes = await AxiosInstance.get("/users/", { headers: {"x-auth-token": token }
         });
         localStorage.setItem("user", userRes.data.user);
         localStorage.setItem("admin", userRes.data.admin);

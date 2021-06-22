@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Axios from "axios";
+import AxiosInstance from "../AxiosInstance";
 
 const CurrentScratchers = () => {
   const [scratchers, setScratchers] = useState("");
@@ -8,8 +8,8 @@ const CurrentScratchers = () => {
   useEffect(() => {
     const getScratchers = async () => {
       try {
-          const data = await Axios.get(
-          `http://localhost:3001/api/scratchers`,
+          const data = await AxiosInstance.get(
+          `/scratchers`,
           {headers: {"x-auth-token": localStorage.getItem("auth-token")}}
         );
         setScratchers(data.data);

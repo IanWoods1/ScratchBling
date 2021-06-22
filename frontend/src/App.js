@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Axios from 'axios';
+import AxiosInstance from "./AxiosInstance";
 import './App.css';
 import AdminView from './pages/AdminView';
 import ConsumerView from './pages/ConsumerView';
@@ -18,13 +18,13 @@ function App() {
         localStorage.setItem("auth-token", "");
         token = "";
       }
-      const tokenRes = await Axios.post(
-        "http://localhost:3001/api/users/tokenIsValid", 
+      const tokenRes = await AxiosInstance.post(
+        "/users/tokenIsValid", 
         null, 
         { headers: { "x-auth-token": token } }
       );
       if (tokenRes.data) {
-        const userRes = await Axios.get("http://localhost:3001/api/users/", { headers: {"x-auth-token": token }
+        const userRes = await AxiosInstance.get("/users/", { headers: {"x-auth-token": token }
         });
         localStorage.setItem("user", userRes.data.user);
         localStorage.setItem("admin", userRes.data.admin);
