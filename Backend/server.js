@@ -2,12 +2,16 @@ const express = require("express");
 const app = express();
 const pool = require("./db_connect")
 const cors = require("cors");
-app.use(cors());
+const jwt = require("jsonwebtoken");
+const auth = require("./auth");
 
+app.use(cors());
 app.use(express.json());
 
+//**********Scratcher Routes**********/
+
 //Get all backscratchers
-app.get("/api/scratchers", async (req, res) => {
+app.get("/api/scratchers", auth, async (req, res) => {
   try {
 
     const allScratchers = await pool.query(
@@ -22,10 +26,12 @@ app.get("/api/scratchers", async (req, res) => {
 });
 
 //Get one backscratcher
-app.get("/api/scratchers/:item_name", async (req, res) => {
+app.get("/api/scratchers/:item_name", auth, async (req, res) => {
   try {
 
     const { item_name} = req.params;
+
+    console.log(item_name);
 
     const scratcher = await pool.query(
       "SELECT * FROM scratchers WHERE item_name = ($1)", [item_name]
@@ -38,15 +44,27 @@ app.get("/api/scratchers/:item_name", async (req, res) => {
   }
 });
 
-//Create backscratcher
-app.post("/api/scratchers", async (req, res) => {
+//Create backscratcher. If a backscratcher with the same name
+//already exists, update it. 
+app.post("/api/scratchers", auth, async (req, res) => {
   try {
     console.log(req);
 
     const {item_name, item_description, item_size, item_cost} = req.body;
     
+    // const newScratcher = await pool.query(
+    //   "INSERT INTO scratchers VALUES ($1, $2, $3, $4) RETURNING *",
+    //   [item_name, item_description, item_size, item_cost]
+    // );
+
     const newScratcher = await pool.query(
-      "INSERT INTO scratchers VALUES ($1, $2, $3, $4) RETURNING *",
+      `INSERT INTO scratchers (item_name, item_description, item_size, item_cost)
+      VALUES ($1, $2, $3, $4) 
+      ON CONFLICT (item_name) DO UPDATE
+      SET item_description = EXCLUDED.item_description,
+      item_size = EXCLUDED.item_size,
+      item_cost = EXCLUDED.item_cost
+      RETURNING *`,
       [item_name, item_description, item_size, item_cost]
     );
 
@@ -57,8 +75,9 @@ app.post("/api/scratchers", async (req, res) => {
   }
 });
 
-//Update backscratcher
-app.put("/api/scratchers/:item_name_param", async (req, res) => {
+//Update backscratcher (Note: not currently using this route as the,
+//POST route will update if the scratcher already exists.)
+app.put("/api/scratchers/:item_name_param", auth, async (req, res) => {
   try {
 
     const { item_name_param } = req.params;
@@ -83,7 +102,7 @@ app.put("/api/scratchers/:item_name_param", async (req, res) => {
 });
 
 //Delete backscratcher
-app.delete("/api/scratchers/:item_name", async (req, res) => {
+app.delete("/api/scratchers/:item_name", auth, async (req, res) => {
   try {
     const { item_name } = req.params;
 
@@ -99,7 +118,95 @@ app.delete("/api/scratchers/:item_name", async (req, res) => {
   }
 });
 
-// app.listen(3001, () => console.log("Listening on port 3001."));
+//**********User Routes**********/
+
+//Login
+app.post("/api/users/login", async (req, res) => {
+
+  try {
+    const { username, password } = req.body;
+
+    console.log(username);
+    console.log(password);
+
+    //Validate user
+    if (!username || !password)
+      return res.status(400).json({ msg: "Not all fields have been entered."})
+
+    const user = await pool.query(
+      "SELECT * FROM users WHERE username = ($1)", [username]
+    );
+    console.log(user);
+    if (user.rows.length<1)  
+      return res.status(400).json({ msg: "No account with this username exists."})
+
+    const isMatch = (password === user.rows[0].password);
+    if (!isMatch)
+      return res.status(400).json({ msg: "Invalid password." })
+
+    //Sign json web token
+    const token = jwt.sign({ id: user.rows[0].username}, process.env.JWT_SECRET);
+
+    res.json({ token, user: user.rows[0].username});
+
+  } catch {
+    res.status(500).json({ error: err.message });
+  }
+})
+
+//Check if a user is logged in
+app.post("/api/users/tokenIsValid", async (req, res) => {
+  try {
+    console.log("hi")
+    const token = req.header("x-auth-token");
+    if (!token) 
+      return res.json(false);
+    
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified)
+      return res.json(false);
+
+    const user = await pool.query(
+      "SELECT * FROM users WHERE username = ($1)", [verified.id]
+    );
+    if (user.rows.length<1) 
+      return res.json(false);
+
+    return res.json(true);
+    
+  } catch (err) {
+    res.json(false);
+  }
+});
+
+//Get one user from username
+app.get("/api/users/:username", async (req, res) => {
+  try {
+
+    const { username } = req.params;
+
+    const user = await pool.query(
+      "SELECT * FROM users WHERE username = ($1)", [username]
+    );
+
+    res.json(user.rows);
+    
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//Get user from jwt token
+app.get("/api/users/", auth, async (req, res) => {
+
+  const user = await pool.query(
+    "SELECT * FROM users WHERE username = ($1)", [req.user]
+  );
+
+  res.json({user: user.rows[0].username});
+
+})
+
 
 const PORT = process.env.PORT || 3001;
 

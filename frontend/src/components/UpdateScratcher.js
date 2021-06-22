@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Axios from "axios";
 
-const CreateScratcher = () => {
+const UpdateScratcher = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [sizeSmall, setSizeSmall] = useState(false);
@@ -32,8 +32,8 @@ const CreateScratcher = () => {
         item_cost: cost
       }
 
-      const data = await Axios.post(
-        `http://localhost:3001/api/scratchers`,
+      const data = await Axios.put(
+        `http://localhost:3001/api/scratchers/${name}`,
         item,
         {headers: {"x-auth-token": localStorage.getItem("auth-token")}}
       );
@@ -44,8 +44,7 @@ const CreateScratcher = () => {
 
   return (
     <div>
-      <h2>Create or Update Scratcher</h2>
-      <p>If the name already exists, the other fields will update.</p>
+      <h2>Update Scratcher</h2>
       <form onSubmit={handleSubmit}>
 
         <label>Name</label>
@@ -75,7 +74,7 @@ const CreateScratcher = () => {
         <br /><br />
   
         <label>Cost</label>
-        <input type="number" name="cost" value={cost} min="0" required
+        <input type="number" name="cost" value={cost} required
           onChange={e => setCost(e.target.value)} />
         <br /><br />
 
@@ -85,4 +84,4 @@ const CreateScratcher = () => {
   )
 }
 
-export default CreateScratcher
+export default UpdateScratcher
