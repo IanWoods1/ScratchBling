@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Axios from 'axios';
 import { Link, useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
-const Login = () => {
+const LoginAdmin = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
 
@@ -14,13 +14,13 @@ const Login = () => {
     try {
       const loginUser = { username, password };
       const loginRes = await Axios.post(
-        "http://localhost:3001/api/users/login", 
+        "http://localhost:3001/api/users/adminlogin", 
         loginUser
       );
       localStorage.setItem("auth-token", loginRes.data.token);
       localStorage.setItem("user", loginRes.data.user);
       localStorage.setItem("admin", loginRes.data.admin);
-      history.push("/");
+      history.push("/admin");
     } catch (err) {
         console.log(err);
     }
@@ -28,7 +28,7 @@ const Login = () => {
 
   return (
     <div className="login-form">
-      <h2>Log in</h2>
+      <h2>Admin Login</h2>
       <form onSubmit={submit}>
         <input type="username" placeholder="Username"
         onChange={e => setUsername(e.target.value)} />
@@ -39,9 +39,9 @@ const Login = () => {
         <input type="submit" value="Submit" />
       </form>
       <br />
-      <Link to="/adminlogin">Go to Admin Login</Link>
+      <Link to="/login">Go to Consumer Login</Link>
     </div>
   )
 }
 
-export default Login
+export default LoginAdmin

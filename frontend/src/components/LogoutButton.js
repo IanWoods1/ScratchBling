@@ -1,15 +1,13 @@
-import React, { useContext } from 'react';
-
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-
 const LogoutButton = () => {
-
   const history = useHistory();
 
   const logout = () => {
     localStorage.setItem("auth-token", "");
     localStorage.setItem("user", "");
+    localStorage.setItem("admin", "");
     history.push("/");
   };
 

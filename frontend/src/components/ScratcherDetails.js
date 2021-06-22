@@ -3,7 +3,7 @@ import {useHistory} from 'react-router-dom';
 
 const ScratcherDetails = (props) => {
   const history = useHistory();
-  const [details, setDetails] = useState(props.routerProps.location.state.scratcherData);
+  const [details] = useState(props.routerProps.location.state.scratcherData);
 
   //Create string listing scratcher sizes.
   var sizeString = "";
@@ -19,12 +19,8 @@ const ScratcherDetails = (props) => {
       <p>Sizes: {sizeString}</p>
       <p>${details.item_cost}</p>
       {
-        localStorage.getItem("user") === "admin" ?
-        <div>
-          <button onClick={() => history.push("/admin")}>Return Admin View</button>
-          <br /><br />
-          <button onClick={() => history.push("/")}>Return Consumer View</button>
-        </div> :
+        localStorage.getItem("admin") === "true" ?
+          <button onClick={() => history.push("/admin")}>Return to Admin View</button> :
         <button onClick={() => history.push("/")}>Return home</button>
       }
     </div>

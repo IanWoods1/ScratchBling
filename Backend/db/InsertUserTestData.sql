@@ -1,3 +1,3 @@
 INSERT INTO users
-VALUES ('admin', 'admin'),
-('consumer', 'consumer')
+VALUES ('admin', 'admin', true),
+('consumer', 'consumer', false)

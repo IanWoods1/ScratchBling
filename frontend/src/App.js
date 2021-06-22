@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Axios from 'axios';
 import './App.css';
 import AdminView from './pages/AdminView';
 import ConsumerView from './pages/ConsumerView';
 import Login from './pages/Login';
+import LoginAdmin from './pages/LoginAdmin';
 import ScratcherDetails from './components/ScratcherDetails'
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
-import UserContext, {userData, setUserData} from "./UserContext";
+// import UserContext from "./UserContext";
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
         const userRes = await Axios.get("http://localhost:3001/api/users/", { headers: {"x-auth-token": token }
         });
         localStorage.setItem("user", userRes.data.user);
+        localStorage.setItem("admin", userRes.data.admin);
       }
     }
 
@@ -37,22 +39,27 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <UserContext.Provider>
+        {/* <UserContext.Provider 
+          value={{ userData, setUserData }}
+        > */}
           <Route path="/" exact 
             render={() => localStorage.getItem("auth-token") ? 
             (<ConsumerView />) : (<Redirect to="/login" />)}>
           </Route>
           <Route path="/admin" exact 
-            render={() => localStorage.getItem("user") === "admin" ? 
-            (<AdminView />) : (<Redirect to="/login" />)}>
+            render={() => localStorage.getItem("admin") === "true" ? 
+            (<AdminView />) : (<Redirect to="/" />)}>
           </Route>
           <Route path="/login" 
               render={() => !localStorage.getItem("user") ? (<Login />) : (<Redirect to="/" />)}>
           </Route>
+          <Route path="/adminlogin"
+              render={() => !localStorage.getItem("user") ? (<LoginAdmin />) : (<Redirect to="/admin" />)}>
+          </Route>
           <Route path="/scratcher-details"
             render={(routerProps) => localStorage.getItem("user") ? (<ScratcherDetails routerProps={routerProps}/>) : (<Redirect to="/login" />)}>
           </Route>
-        </UserContext.Provider>
+        {/* </UserContext.Provider> */}
       </Router>
     </div>
   );

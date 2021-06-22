@@ -75,7 +75,7 @@ const CreateScratcher = () => {
         <br /><br />
   
         <label>Cost</label>
-        <input type="number" name="cost" value={cost} min="0" required
+        <input type="number" name="cost" value={cost} min="0" step=".01" required
           onChange={e => setCost(e.target.value)} />
         <br /><br />
 

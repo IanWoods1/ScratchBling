@@ -48,14 +48,8 @@ app.get("/api/scratchers/:item_name", auth, async (req, res) => {
 //already exists, update it. 
 app.post("/api/scratchers", auth, async (req, res) => {
   try {
-    console.log(req);
 
     const {item_name, item_description, item_size, item_cost} = req.body;
-    
-    // const newScratcher = await pool.query(
-    //   "INSERT INTO scratchers VALUES ($1, $2, $3, $4) RETURNING *",
-    //   [item_name, item_description, item_size, item_cost]
-    // );
 
     const newScratcher = await pool.query(
       `INSERT INTO scratchers (item_name, item_description, item_size, item_cost)
@@ -120,7 +114,7 @@ app.delete("/api/scratchers/:item_name", auth, async (req, res) => {
 
 //**********User Routes**********/
 
-//Login
+//Consumer login
 app.post("/api/users/login", async (req, res) => {
 
   try {
@@ -147,7 +141,50 @@ app.post("/api/users/login", async (req, res) => {
     //Sign json web token
     const token = jwt.sign({ id: user.rows[0].username}, process.env.JWT_SECRET);
 
-    res.json({ token, user: user.rows[0].username});
+    res.json({ 
+      token, 
+      user: user.rows[0].username, 
+      admin: false
+    });
+
+  } catch {
+    res.status(500).json({ error: err.message });
+  }
+})
+
+//Admin login
+app.post("/api/users/adminlogin", async (req, res) => {
+
+  try {
+    const { username, password } = req.body;
+
+    //Validate user
+    if (!username || !password)
+      return res.status(400).json({ msg: "Not all fields have been entered."})
+
+    const user = await pool.query(
+      "SELECT * FROM users WHERE username = ($1)", [username]
+    );
+
+    if (user.rows.length<1)  
+      return res.status(400).json({ msg: "No account with this username exists."})
+
+    const isMatch = (password === user.rows[0].password);
+    if (!isMatch)
+      return res.status(400).json({ msg: "Invalid password." })
+
+    const isAdmin = (user.rows[0].admin === true);
+    if (!isAdmin)
+      return res.status(400).json({ msg: "User does not have admin priviledges." })
+
+    //Sign json web token
+    const token = jwt.sign({ id: user.rows[0].username}, process.env.JWT_SECRET);
+
+    res.json({ 
+      token, 
+      user: user.rows[0].username, 
+      admin: user.rows[0].admin
+    });
 
   } catch {
     res.status(500).json({ error: err.message });
@@ -157,7 +194,7 @@ app.post("/api/users/login", async (req, res) => {
 //Check if a user is logged in
 app.post("/api/users/tokenIsValid", async (req, res) => {
   try {
-    console.log("hi")
+
     const token = req.header("x-auth-token");
     if (!token) 
       return res.json(false);
@@ -179,7 +216,8 @@ app.post("/api/users/tokenIsValid", async (req, res) => {
   }
 });
 
-//Get one user from username
+//Get one user from username (This route is not currently
+//used by the app.)
 app.get("/api/users/:username", async (req, res) => {
   try {
 
@@ -203,7 +241,10 @@ app.get("/api/users/", auth, async (req, res) => {
     "SELECT * FROM users WHERE username = ($1)", [req.user]
   );
 
-  res.json({user: user.rows[0].username});
+  res.json({ 
+    user: user.rows[0].username, 
+    admin: user.rows[0].admin
+  });
 
 })
 
