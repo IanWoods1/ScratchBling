@@ -27,7 +27,9 @@ const Login = () => {
   }
 
   return (
-    <div className="login-form">
+    <div>
+      <h1>Welcome to ScratchBling!</h1>
+      <br />
       <h2>Log in</h2>
       <form onSubmit={submit}>
         <input type="username" placeholder="Username"

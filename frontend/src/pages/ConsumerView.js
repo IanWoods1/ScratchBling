@@ -6,8 +6,10 @@ const ConsumerView = () => {
  
   return (
     <div>
-      <LogoutButton />
+      <h1>ScratchBling Store</h1>
       <CurrentScratchers />
+      <br />
+      <LogoutButton />
     </div>
   )
 }

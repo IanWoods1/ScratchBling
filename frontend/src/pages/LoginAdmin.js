@@ -27,7 +27,9 @@ const LoginAdmin = () => {
   }
 
   return (
-    <div className="login-form">
+    <div>
+      <h1>Welcome to ScratchBling!</h1>
+      <br />
       <h2>Admin Login</h2>
       <form onSubmit={submit}>
         <input type="username" placeholder="Username"

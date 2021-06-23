@@ -8,10 +8,12 @@ const AdminView = () => {
  
   return (
     <div>
-      <LogoutButton />
+      <h1>Admin Panel</h1>
       <CreateScratcher />
       <DeleteScratcher />
       <CurrentScratchers />
+      <br />
+      <LogoutButton />
     </div>
   )
 }

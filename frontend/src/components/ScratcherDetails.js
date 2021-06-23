@@ -20,8 +20,8 @@ const ScratcherDetails = (props) => {
       <p>${details.item_cost}</p>
       {
         localStorage.getItem("admin") === "true" ?
-          <button onClick={() => history.push("/admin")}>Return to Admin View</button> :
-        <button onClick={() => history.push("/")}>Return home</button>
+          <button onClick={() => history.push("/admin")}>Return to Admin Panel</button> :
+        <button onClick={() => history.push("/")}>Return to store</button>
       }
     </div>
 
