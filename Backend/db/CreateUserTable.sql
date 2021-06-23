@@ -1,5 +1,5 @@
 CREATE TABLE users
     (username           text     NOT NULL,
      user_password      text     NOT NULL,
-     admin              boolean
+     admin              boolean,
     PRIMARY KEY (username));

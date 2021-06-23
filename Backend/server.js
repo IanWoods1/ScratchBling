@@ -147,8 +147,8 @@ app.post("/api/users/login", async (req, res) => {
       admin: false
     });
 
-  } catch {
-    res.status(500).json({ error: err.message });
+  } catch(err) {
+    res.status(500).json({ error: err });
   }
 })
 
@@ -186,8 +186,8 @@ app.post("/api/users/adminlogin", async (req, res) => {
       admin: user.rows[0].admin
     });
 
-  } catch {
-    res.status(500).json({ error: err.message });
+  } catch(err) {
+    res.status(500).json({ error: err });
   }
 })
 
@@ -230,7 +230,7 @@ app.get("/api/users/:username", async (req, res) => {
     res.json(user.rows);
     
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err });
   }
 });
 
